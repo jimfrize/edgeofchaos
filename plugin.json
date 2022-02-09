@@ -1,0 +1,28 @@
+{
+  "slug": "edgeofchaos",
+  "name": "Edge Of Chaos",
+  "version": "2.0.0",
+  "license": "CC BY-NC 4.0",
+  "brand": "Edge Of Chaos",
+  "author": "James Frize",
+  "authorEmail": "jim@sonodrome.co.uk",
+  "authorUrl": "sonodrome.co.uk",
+  "pluginUrl": "github.com/jimfrize/EdgeOfChaos",
+  "manualUrl": "github.com/jimfrize/EdgeOfChaos",
+  "sourceUrl": "github.com/jimfrize/EdgeOfChaos",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "datawave",
+      "name": "Datawave",
+      "description": "CV sequencer with slew rate limiter and seeded randomness",
+      "tags": [
+        "Random",
+        "Slew limiter",
+        "Sequencer",
+        "Function generator"
+      ]
+    }
+  ]
+}
