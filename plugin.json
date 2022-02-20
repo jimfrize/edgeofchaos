@@ -23,6 +23,21 @@
         "Sequencer",
         "Function generator"
       ]
+    },
+    {
+      "slug": "chronos",
+      "name": "Chronos",
+      "description": "",
+      "tags": [
+        "Clock generator",
+        "Clock modulator"
+      ]
+    },
+    {
+      "slug": "syn",
+      "name": "Syn",
+      "description": "",
+      "tags": []
     }
   ]
 }
