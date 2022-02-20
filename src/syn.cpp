@@ -44,7 +44,8 @@ struct Syn : Module
 
 		if(inputs[BPM_CV_INPUT].isConnected())
 		{
-			params[BPM_PARAM].setValue( std::round( (inputs[BPM_CV_INPUT].getVoltage() / 10.f) * 999.f ) );
+			float cv = clamp(inputs[BPM_CV_INPUT].getVoltage() / 10.f, 0.f, 1.f);
+			params[BPM_PARAM].setValue( std::round( cv * 999.f ) );
 		}
 
 		_BPM = std::round(params[BPM_PARAM].getValue());

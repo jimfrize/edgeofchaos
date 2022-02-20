@@ -1,4 +1,5 @@
 #include "plugin.hpp"
+#include <dsp/digital.hpp>
 
 ///////////////////////////////////////////////////////////////
 // global variables for syncing with external -=Syn=- module // 
@@ -51,9 +52,10 @@ struct Chronos : Module
 	bool tog = 0.f;
 	bool reset_flag = true;
 
-	float accumulator = 0.f;
+	rack::dsp::TTimer<float> TIMER; // main timer
+
 	float freq = 0.f;
-	float mults[15] = { 1.f / 128.f, 1.f / 64.f, 1.f / 32.f, 1.f / 16.f, 1.f / 8.f, 1.f / 4.f, 1.f / 2.f, 1.f, 2.f, 3.f, 4.f, 6.f, 8.f, 12.f, 16.f };
+	const float mults[15] = { 1.f / 128.f, 1.f / 64.f, 1.f / 32.f, 1.f / 16.f, 1.f / 8.f, 1.f / 4.f, 1.f / 2.f, 1.f, 2.f, 3.f, 4.f, 6.f, 8.f, 12.f, 16.f };
 
 	Chronos()
 	{
@@ -178,7 +180,7 @@ struct Chronos : Module
 				{
 					if(reset_flag) // do once when sync mode is first turned on
 					{
-						accumulator = 0.f; // reset accumulator and outputs
+						TIMER.reset();
 						if(outputs[SUB1_OUTPUT].isConnected()) { outputs[SUB1_OUTPUT].setVoltage(0.f); }
 						if(outputs[SUB2_OUTPUT].isConnected()) { outputs[SUB2_OUTPUT].setVoltage(0.f); }
 						if(outputs[SUB2_OUTPUT].isConnected()) { outputs[SUB2_OUTPUT].setVoltage(0.f); }
@@ -217,31 +219,28 @@ struct Chronos : Module
 
 				if(tog) // if outputs are toggled on, set thier phase and voltage
 				{
+					float _time = TIMER.getTime();
+
 					if(outputs[SUB1_OUTPUT].isConnected())
 					{
-						float phase = std::fmod( (accumulator + params[OFF1_PARAM].getValue() ) * mults[ (int)params[RATE1_PARAM].getValue() ], 1.f);
+						float phase = std::fmod( (_time + params[OFF1_PARAM].getValue() ) * mults[ (int)params[RATE1_PARAM].getValue() ], 1.f);
 						outputs[SUB1_OUTPUT].setVoltage(phase < 0.5f ? 10.f : 0.f);
 					}
 
 					if(outputs[SUB2_OUTPUT].isConnected())
 					{
-						float phase = std::fmod( (accumulator + params[OFF2_PARAM].getValue() ) * mults[ (int)params[RATE2_PARAM].getValue() ], 1.f);
+						float phase = std::fmod( (_time + params[OFF2_PARAM].getValue() ) * mults[ (int)params[RATE2_PARAM].getValue() ], 1.f);
 						outputs[SUB2_OUTPUT].setVoltage(phase < 0.5f ? 10.f : 0.f);
 					}
 
 					if(outputs[SUB3_OUTPUT].isConnected())
 					{
-						float phase = std::fmod( (accumulator + params[OFF3_PARAM].getValue() ) * mults[ (int)params[RATE3_PARAM].getValue() ], 1.f);
+						float phase = std::fmod( (_time + params[OFF3_PARAM].getValue() ) * mults[ (int)params[RATE3_PARAM].getValue() ], 1.f);
 						outputs[SUB3_OUTPUT].setVoltage(phase < 0.5f ? 10.f : 0.f);
 					}
 				}
 
-				accumulator += (freq * args.sampleTime); // accumulate!!!
-
-				if(accumulator * mults[0] >= 1.f) // reset accumulator when maximum interval reached to avoid wrap-around / overflow
-				{
-					accumulator = 0.f;
-				}
+				TIMER.process(freq * args.sampleTime); // accumulate!!!
 			}
 
 			///////////////////////////
@@ -250,8 +249,7 @@ struct Chronos : Module
 
 			else
 			{
-				accumulator = 0.f; // reset accumulator and outputs for next run
-
+				TIMER.reset();
 				if(outputs[SUB1_OUTPUT].isConnected()) { outputs[SUB1_OUTPUT].setVoltage(0.f); }
 				if(outputs[SUB2_OUTPUT].isConnected()) { outputs[SUB2_OUTPUT].setVoltage(0.f); }
 				if(outputs[SUB2_OUTPUT].isConnected()) { outputs[SUB2_OUTPUT].setVoltage(0.f); }
