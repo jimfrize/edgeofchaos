@@ -1,5 +1,6 @@
 #include "plugin.hpp"
 #include <dsp/digital.hpp>
+#include <iostream>
 
 ///////////////////////////////////////////////////////////////
 // global variables for syncing with external -=Syn=- module // 
@@ -216,11 +217,16 @@ struct Chronos : Module
 				///////////////////////
 				// set clock outputs //
 				///////////////////////
+				
+				float _time = TIMER.getTime();
+
+				if(_time >= 256.f) { TIMER.reset(); } // reset timer to prevent wrap around / overflow
+
+				std::cout << _time << "\n";
+
 
 				if(tog) // if outputs are toggled on, set thier phase and voltage
 				{
-					float _time = TIMER.getTime();
-
 					if(outputs[SUB1_OUTPUT].isConnected())
 					{
 						float phase = std::fmod( (_time + params[OFF1_PARAM].getValue() ) * mults[ (int)params[RATE1_PARAM].getValue() ], 1.f);
