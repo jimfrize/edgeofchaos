@@ -1,6 +1,5 @@
 #include "plugin.hpp"
 #include <dsp/digital.hpp>
-#include <iostream>
 
 ///////////////////////////////////////////////////////////////
 // global variables for syncing with external -=Syn=- module // 
@@ -189,7 +188,7 @@ struct Chronos : Module
 						reset_flag = false;
 					}
 
-					freq = (float) _BPM / 60.f; // set main clock freq according to BPM from external -=Syn=- module
+					freq = _BPM / 60.f; // set main clock freq according to BPM from external -=Syn=- module
 					params[BPM_PARAM].setValue(_BPM); // set BPM knob
 				}
 
@@ -211,7 +210,7 @@ struct Chronos : Module
 						local_bpm = std::round(params[BPM_PARAM].getValue()); // set BPM according to the BPM knob
 					}
 
-					freq = (float) local_bpm / 60.f; // set main clock freq according to local BPM
+					freq = local_bpm / 60.f; // set main clock freq according to local BPM
 				}
 
 				///////////////////////
@@ -219,11 +218,7 @@ struct Chronos : Module
 				///////////////////////
 				
 				float _time = TIMER.getTime();
-
-				if(_time >= 256.f) { TIMER.reset(); } // reset timer to prevent wrap around / overflow
-
-				std::cout << _time << "\n";
-
+				if(_time >= 128.f) { TIMER.reset(); } // reset timer to prevent wrap around / overflow, do this when the timer is >= the maximum time div
 
 				if(tog) // if outputs are toggled on, set thier phase and voltage
 				{
@@ -247,7 +242,7 @@ struct Chronos : Module
 				}
 
 				TIMER.process(freq * args.sampleTime); // accumulate!!!
-			}
+				}
 
 			///////////////////////////
 			// if run state is false //
