@@ -52,9 +52,9 @@ struct Chronos : Module
 	bool tog = 0.f;
 	bool reset_flag = true;
 
-	rack::dsp::TTimer<float> TIMER; // main timer
+	rack::dsp::TTimer<double> TIMER; // main timer
 
-	float freq = 0.f;
+	double freq = 0.f;
 	const float mults[15] = { 1.f / 128.f, 1.f / 64.f, 1.f / 32.f, 1.f / 16.f, 1.f / 8.f, 1.f / 4.f, 1.f / 2.f, 1.f, 2.f, 3.f, 4.f, 6.f, 8.f, 12.f, 16.f };
 
 	Chronos()
@@ -217,7 +217,7 @@ struct Chronos : Module
 				// set clock outputs //
 				///////////////////////
 				
-				float _time = TIMER.getTime();
+				double _time = TIMER.getTime();
 				if(_time >= 128.f) { TIMER.reset(); } // reset timer to prevent wrap around / overflow, do this when the timer is >= the maximum time div
 
 				if(tog) // if outputs are toggled on, set thier phase and voltage
